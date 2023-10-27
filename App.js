@@ -1,56 +1,86 @@
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
+import * as XLSX from 'xlsx';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
+
 export default function App() {
   const [data, setData] = useState([
-
     {
-      "A": 'A',
-      "B": 'B',
-      "C": 'C',
-      "D": 'D',
-      "E": 'E',
+      "A": "A",
+      "B": "B",
+      "C": "C",
+      "D": 'D'
     },
     {
-      "A": 1,
-      "B": 1,
-      "C": 1,
-      "D": 1,
-      "E": 1,
+      "A": 4,
+      "B": "Alice Brown",
+      "C": "alicebrown@example.com",
+      "D": 28
     },
     {
-      "A": 1,
-      "B": 1,
-      "C": 1,
-      "D": 1,
-      "E": 1,
+      "A": 4,
+      "B": "Alice Brown",
+      "C": "alicebrown@example.com",
+      "D": 28
     },
     {
-      "A": 1,
-      "B": 1,
-      "C": 1,
-      "D": 1,
-      "E": 1,
+      "A": 4,
+      "B": "Alice Brown",
+      "C": "alicebrown@example.com",
+      "D": 28
     },
     {
-      "A": 1,
-      "B": 1,
-      "C": 1,
-      "D": 1,
-      "E": 1,
+      "A": 4,
+      "B": "Alice Brown",
+      "C": "alicebrown@example.com",
+      "D": 28
     },
-
+    {
+      "A": 4,
+      "B": "Alice Brown",
+      "C": "alicebrown@example.com",
+      "D": 28
+    },
   ]);
+  const generateExcel = () => {
+    let wb = XLSX.utils.book_new();
+    const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
+
+
+    XLSX.utils.book_append_sheet(wb, newWorksheet, "MyFirstSheet", 'Sheet1');
+
+
+    const base64 = XLSX.write(wb, { type: "base64" });
+    const filename = FileSystem.documentDirectory + "MyExcel.xlsx";
+    FileSystem.writeAsStringAsync(filename, base64, {
+      encoding: FileSystem.EncodingType.Base64
+    }).then(() => {
+      Sharing.shareAsync(filename);
+    });
+  };
+
 
   const handleChange = (newValue, rowIndex, key) => {
     const updatedData = [...data];
     updatedData[rowIndex][key] = newValue;
     setData(updatedData);
   };
+  const clickHandler = () => {
+    generateExcel()
+  }
 
   return (
     <ScrollView>
       <View style={styles.container}>
+        <Pressable onPress={clickHandler} style={{ backgroundColor: 'blue' }} >
+          <Text>
+            save File
+
+          </Text>
+        </Pressable>
 
         {data.map((el, rowIndex) => (
 
@@ -97,5 +127,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20
   },
 });
