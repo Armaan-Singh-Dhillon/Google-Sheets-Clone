@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, Button } from 'react-native';
+import { Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import Splash from './screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,7 +6,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainExcel from './screens/MainExcel';
 import MyContext from './Context/MyContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -14,24 +13,28 @@ import data from './data/data';
 const Stack = createNativeStackNavigator();
 const importedData = data
 export default function App() {
+  const [loader, setloader] = useState(true)
 
-  // useEffect(() => {
-  //   const retrieveObject = async () => {
-  //     try {
-  //       const jsonString = await AsyncStorage.getItem('data');
-  //       if (jsonString !== null) {
-  //         const dataSaved = JSON.parse(jsonString);
-  //         setData(dataSaved)
-  //       } else {
-  //         console.log('Object not found in AsyncStorage');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error retrieving object:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const retrieveObject = async () => {
+      try {
+        const jsonString = await AsyncStorage.getItem('data');
+        if (jsonString !== null) {
+          const dataSaved = JSON.parse(jsonString);
+          setData(dataSaved)
+        } else {
+          console.log('Object not found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error retrieving object:', error);
+      }
+    };
 
-  //   retrieveObject();
-  // }, []);
+    retrieveObject();
+    setTimeout(() => {
+      setloader(false)
+    }, 1000)
+  }, []);
   const generateExcel = () => {
     let wb = XLSX.utils.book_new();
     const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
@@ -82,9 +85,11 @@ export default function App() {
 
 
     <NavigationContainer>
+      {loader && <Splash />}
       <ContextProvider >
+
         <Stack.Navigator >
-          <Stack.Screen name='splash' options={{ title: 'Google Sheets' }} component={Splash} />
+
           <Stack.Screen name='work' component={MainExcel} options={{
             title: 'Spreadsheet',
             headerRight: () => (
@@ -108,13 +113,3 @@ export default function App() {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-
-  },
-});

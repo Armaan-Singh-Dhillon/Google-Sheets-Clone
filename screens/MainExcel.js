@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, Keyboard } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useContext } from 'react';
 import MyContext from '../Context/MyContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,12 +9,9 @@ const MainExcel = () => {
     const { data } = useContext(MyContext)
     const temp = [...data]
 
-
-
-
     return (
         <SafeAreaView>
-            <ScrollView style={{ backgroundColor: '#fff', height: '100%' }}>
+            <ScrollView style={{ backgroundColor: '#fff' }}>
 
                 <ScrollView horizontal={true} style={{ backgroundColor: '#fff', height: '100%' }} >
                     <View>
@@ -51,14 +48,5 @@ const MainExcel = () => {
 
     )
 }
-const cellStyle = StyleSheet.create({
-    width: 120,
-    borderColor: 'grey',
-    borderWidth: 1,
-    color: 'black',
-    textAlign: "center",
-    padding: 2.5
-
-})
 
 export default MainExcel

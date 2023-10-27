@@ -2,15 +2,8 @@ import { View, Text, Image } from 'react-native'
 import React, { useEffect } from 'react'
 import Loader from '../assets/spreadsheet_loader.gif'
 import progress from '../assets/loadin_gif.gif'
-import { useNavigation } from '@react-navigation/native'
 
 const Splash = () => {
-  const navigation = useNavigation()
-  useEffect(() => {
-    setTimeout(() => {
-      navigation.navigate('work')
-    }, 2000)
-  })
 
   return (
     <View style={{
