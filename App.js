@@ -1,12 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 export default function App() {
+  useEffect(() => {
+    const retrieveObject = async () => {
+      try {
+        const jsonString = await AsyncStorage.getItem('data');
+        if (jsonString !== null) {
+          const dataSaved = JSON.parse(jsonString);
+          setData(dataSaved)
+        } else {
+          console.log('Object not found in AsyncStorage');
+        }
+      } catch (error) {
+        console.error('Error retrieving object:', error);
+      }
+    };
+
+    retrieveObject();
+  }, []);
+
   const [data, setData] = useState([
     {
       "A": "A",
@@ -45,6 +65,7 @@ export default function App() {
       "D": 28
     },
   ]);
+
   const generateExcel = () => {
     let wb = XLSX.utils.book_new();
     const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
@@ -67,6 +88,14 @@ export default function App() {
     const updatedData = [...data];
     updatedData[rowIndex][key] = newValue;
     setData(updatedData);
+    const dataStore = JSON.stringify(data)
+    AsyncStorage.setItem('data', dataStore)
+      .then(() => {
+        console.log('Data stored successfully');
+      })
+      .catch(error => {
+        console.error('Error storing data: ', error);
+      });
   };
   const clickHandler = () => {
     generateExcel()
