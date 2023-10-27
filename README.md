@@ -1,4 +1,4 @@
-- **Android Build:**: https://drive.google.com/drive/u/0/my-drive.
+- **Android Build:**:https://drive.google.com/drive/u/0/my-drive
 - **XLSX Format:** Utilize XLSX format for spreadsheet compatibility.
 - **Grid Interface:** Develop a grid-based input system.
 - **State Management:** Implement a data state management system.
