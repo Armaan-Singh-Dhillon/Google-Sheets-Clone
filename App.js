@@ -30,14 +30,15 @@ export default function App() {
       }
     };
 
-    retrieveObject();
+    // retrieveObject();
     setTimeout(() => {
       setloader(false)
     }, 1000)
   }, []);
   const generateExcel = () => {
     let wb = XLSX.utils.book_new();
-    const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
+    const dataWithoutHeader = data.slice(1);
+    const newWorksheet = XLSX.utils.json_to_sheet(dataWithoutHeader, { skipHeader: true })
 
 
     XLSX.utils.book_append_sheet(wb, newWorksheet, "MyFirstSheet", 'Sheet1');
