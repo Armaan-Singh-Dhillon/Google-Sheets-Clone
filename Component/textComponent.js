@@ -5,7 +5,6 @@ import MyContext from '../Context/MyContext'
 import { useContext } from 'react'
 const TextComponent = ({ rowIndex, col }) => {
     const { data } = useContext(MyContext)
-    console.log(rowIndex, col)
     const handleChange = () => {
         data[rowIndex][col] = input
     };

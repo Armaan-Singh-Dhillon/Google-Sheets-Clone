@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View, Button } from 'react-native';
 import { useState, useEffect } from 'react';
 import Splash from './screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,10 +7,14 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MainExcel from './screens/MainExcel';
 import MyContext from './Context/MyContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as XLSX from 'xlsx';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import data from './data/data';
 const Stack = createNativeStackNavigator();
 const importedData = data
 export default function App() {
+
   // useEffect(() => {
   //   const retrieveObject = async () => {
   //     try {
@@ -28,7 +32,40 @@ export default function App() {
 
   //   retrieveObject();
   // }, []);
+  const generateExcel = () => {
+    let wb = XLSX.utils.book_new();
+    const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
 
+
+    XLSX.utils.book_append_sheet(wb, newWorksheet, "MyFirstSheet", 'Sheet1');
+
+
+    const base64 = XLSX.write(wb, { type: "base64" });
+    const filename = FileSystem.documentDirectory + "MyExcel.xlsx";
+    FileSystem.writeAsStringAsync(filename, base64, {
+      encoding: FileSystem.EncodingType.Base64
+    }).then(() => {
+      Sharing.shareAsync(filename);
+    });
+  };
+
+
+  const saveHandler = () => {
+    setData(data)
+    const dataStore = JSON.stringify(data)
+
+    AsyncStorage.setItem('data', dataStore)
+      .then(() => {
+        console.log('Data stored successfully');
+      })
+      .catch(error => {
+        console.error('Error storing data: ', error);
+      });
+  }
+  const SaveAndShare = () => {
+    saveHandler()
+    generateExcel()
+  }
   const [data, setData] = useState(importedData);
   const ContextProvider = ({ children }) => {
 
@@ -47,8 +84,18 @@ export default function App() {
     <NavigationContainer>
       <ContextProvider >
         <Stack.Navigator >
-          {/* <Stack.Screen name='splash' options={{ title: 'Google Sheets' }} component={Splash} /> */}
-          <Stack.Screen name='work' component={MainExcel} options={{ headerShown: false }} />
+          <Stack.Screen name='splash' options={{ title: 'Google Sheets' }} component={Splash} />
+          <Stack.Screen name='work' component={MainExcel} options={{
+            title: 'Spreadsheet',
+            headerRight: () => (
+              <Button
+                onPress={() => SaveAndShare()}
+                title="Save and Send"
+                color="green"
+              />
+            ),
+
+          }} />
 
 
         </Stack.Navigator>
