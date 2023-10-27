@@ -1,14 +1,17 @@
 import { View, Text, Image } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Loader from '../assets/spreadsheet_loader.gif'
 import progress from '../assets/loadin_gif.gif'
 import { useNavigation } from '@react-navigation/native'
 
 const Splash = () => {
   const navigation = useNavigation()
-  setTimeout(() => {
-    navigation.navigate('work')
-  }, 3000)
+  useEffect(() => {
+    setTimeout(() => {
+      navigation.navigate('work')
+    }, 2000)
+  })
+
   return (
     <View style={{
       width: '100%', height: '100%',
