@@ -1,12 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import Splash from './screens/Splash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MainExcel from './screens/MainExcel';
+import MyContext from './Context/MyCOntext';
+import { SafeAreaView } from 'react-native-safe-area-context';
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   useEffect(() => {
@@ -65,87 +66,33 @@ export default function App() {
       "D": 28
     },
   ]);
+  const ContextProvider = ({ children }) => {
 
-  const generateExcel = () => {
-    let wb = XLSX.utils.book_new();
-    const newWorksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true })
-
-
-    XLSX.utils.book_append_sheet(wb, newWorksheet, "MyFirstSheet", 'Sheet1');
-
-
-    const base64 = XLSX.write(wb, { type: "base64" });
-    const filename = FileSystem.documentDirectory + "MyExcel.xlsx";
-    FileSystem.writeAsStringAsync(filename, base64, {
-      encoding: FileSystem.EncodingType.Base64
-    }).then(() => {
-      Sharing.shareAsync(filename);
-    });
-  };
-
-
-  const handleChange = (newValue, rowIndex, key) => {
-    const updatedData = [...data];
-    updatedData[rowIndex][key] = newValue;
-    setData(updatedData);
-    const dataStore = JSON.stringify(data)
-    AsyncStorage.setItem('data', dataStore)
-      .then(() => {
-        console.log('Data stored successfully');
-      })
-      .catch(error => {
-        console.error('Error storing data: ', error);
-      });
-  };
-  const clickHandler = () => {
-    generateExcel()
+    return (
+      <MyContext.Provider value={{ data }} >
+        {children}
+      </MyContext.Provider>
+    );
   }
 
+
+
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Pressable onPress={clickHandler} style={{ backgroundColor: 'blue' }} >
-          <Text>
-            save File
-
-          </Text>
-        </Pressable>
-
-        {data.map((el, rowIndex) => (
-
-          <View key={rowIndex} style={{ flexDirection: 'row' }}>
-            <View style={{
-              width: 50,
-              borderColor: 'grey',
-              borderWidth: 2,
-              color: 'black',
-              alignItems: 'center'
-            }}>
-              <Text>
-                {rowIndex}
-              </Text>
-            </View>
-            {Object.entries(el).map(([key, val], index) => (
 
 
-              <TextInput
-                key={key}
-                style={{
-                  width: 50,
-                  borderColor: 'grey',
-                  borderWidth: 2,
-                  color: 'black',
-                  textAlign: "center"
-                }}
-                value={val + ''}
-                onChangeText={(text) => handleChange(text, rowIndex, key)}
-              />
-            ))}
-          </View>
-        ))}
-        <TextInput style={{ width: 100 }} />
-      </View>
-    </ScrollView>
+    <NavigationContainer>
+      <ContextProvider >
+        <Stack.Navigator >
+          <Stack.Screen name='splash' options={{ title: 'Google Sheets' }} component={Splash} />
+          <Stack.Screen name='work' component={MainExcel} options={{ headerShown: false }} />
+
+
+        </Stack.Navigator>
+
+
+      </ContextProvider>
+    </NavigationContainer>
+
   );
 }
 
