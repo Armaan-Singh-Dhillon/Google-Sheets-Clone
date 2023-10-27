@@ -11,7 +11,7 @@ const MainExcel = () => {
 
     return (
         <SafeAreaView>
-            <ScrollView style={{ backgroundColor: '#fff' }}>
+            <ScrollView>
 
                 <ScrollView horizontal={true} style={{ backgroundColor: '#fff', padding: 8, marginTop: 6 }} >
                     <View>
@@ -43,6 +43,7 @@ const MainExcel = () => {
                     </View>
                 </ScrollView>
             </ScrollView>
+
 
         </SafeAreaView>
 
